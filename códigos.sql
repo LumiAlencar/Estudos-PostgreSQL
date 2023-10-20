@@ -28,10 +28,9 @@ INSERT INTO Pedido VALUES
 
 -- 1 - Retornar o código e nome dos produtos que entraram no estoque no ano de 2022, ordenados por quantidade em estoque DECRESCENTE.
 
-SELECT * 
+SELECT CODIGO, NOME 
 FROM Produto 
-WHERE DATA_ENTRADA_ESTOQUE 
-BETWEEN '01/01/2022' AND '31/12/2022' 
+WHERE EXTRACT(YEAR FROM DATA_ENTRADA_ESTOQUE) = 2022
 ORDER BY QUANTIDADE_ESTOQUE DESC;
 
 -- 2 - Retornar o código de todos os produtos que não tiveram nenhum pedido.
@@ -46,7 +45,7 @@ WHERE NOT EXISTS (
 
 -- 3 - Retornar o nome, CPF e IDADE de todos os clientes(a idade deve ser calculada), ordenando pela idade CRESCENTE.
 
-SELECT NOME AS Nome_Cliente, AGE(CURRENT_DATE, DATA_NASCIMENTO) as Idade
+SELECT NOME AS Nome_Cliente, CPF, AGE(CURRENT_DATE, DATA_NASCIMENTO) as Idade
 FROM Cliente
 ORDER BY IDADE ASC;
 
@@ -75,9 +74,9 @@ AND pedido.QUANTIDADE > 2;
 
 -- 7 - Retornar o valor total(preço x quantidade) de pedidos feitos para produtos que entraram no estoque entre Junho de 2022 e Janeiro de 2023.
 
-SELECT Pedido.NUMERO, Produto.NOME, Produto.PRECO * Pedido.QUANTIDADE AS Valor_total
+SELECT Produto.PRECO * Pedido.QUANTIDADE AS Valor_total
 FROM Produto, Pedido
-WHERE Produto.DATA_ENTRADA_ESTOQUE > '01/06/2022' AND Produto.DATA_ENTRADA_ESTOQUE < '31/01/2023' AND Produto.ID = Pedido.ID_PRODUTO;
+WHERE Produto.DATA_ENTRADA_ESTOQUE BETWEEN '01/06/2022' AND '31/01/2023' AND Produto.ID = Pedido.ID_PRODUTO;
 
 -- 8 - Retornar o nome do cliente, CPF e número de dias desde o último pedido dos clientes que possuem o sobrenome Lima.
 
@@ -92,7 +91,7 @@ WHERE Cliente.NOME LIKE '%Lima%';
 UPDATE Produto
 SET QUANTIDADE_ESTOQUE = QUANTIDADE_ESTOQUE + 200 
 FROM Pedido
-WHERE Pedido.DATA > '01/12/2022' AND Pedido.DATA < '28/02/2023' AND Produto.ID = Pedido.ID_PRODUTO;
+WHERE Pedido.DATA IS BETWEEN '01/12/2022' AND '28/02/2023' AND Produto.ID = Pedido.ID_PRODUTO;
 
 -- Checagem
 SELECT NOME, QUANTIDADE_ESTOQUE FROM Produto ORDER BY ID ASC;
