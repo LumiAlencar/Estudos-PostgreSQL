@@ -26,7 +26,7 @@ INSERT INTO Pedido VALUES
 (3, 3, 2, '17/10/2022', 1),
 (4, 2, 1, '20/12/2022', 2);
 
--- 1 - Produtos que entraram em estoque em 2022, ordenamento decrescente pela quantidade de estoque
+-- 1 - Retornar o código e nome dos produtos que entraram no estoque no ano de 2022, ordenados por quantidade em estoque DECRESCENTE.
 
 SELECT * 
 FROM Produto 
@@ -34,7 +34,7 @@ WHERE DATA_ENTRADA_ESTOQUE
 BETWEEN '01/01/2022' AND '31/12/2022' 
 ORDER BY QUANTIDADE_ESTOQUE DESC;
 
--- 2 - CODIGO de PRODUTOS que não tiveram nenhum pedido
+-- 2 - Retornar o código de todos os produtos que não tiveram nenhum pedido.
 
 SELECT CODIGO AS Código
 FROM Produto
@@ -44,13 +44,13 @@ WHERE NOT EXISTS (
 	WHERE ID_PRODUTO = ID 
 	);
 
--- 3 - NOME, CPF e IDADE de todos os clientes, ordenando crescentemente pela idade
+-- 3 - Retornar o nome, CPF e IDADE de todos os clientes(a idade deve ser calculada), ordenando pela idade CRESCENTE.
 
 SELECT NOME AS Nome_Cliente, AGE(CURRENT_DATE, DATA_NASCIMENTO) as Idade
 FROM Cliente
 ORDER BY IDADE ASC;
 
--- 4 - NOME e SOMA de produtos PEDIDOS de todo CLIENTE, caso esse não compre nada, mostrar 0 
+-- 4 - Retornar o nome e SOMA de produtos pedidos de todos os clientes(caso o cliente não tenha feito nenhum pedido, deve mostrar o valor zero).
 
 SELECT Cliente.NOME AS Nome_Cliente, COALESCE(SUM(Pedido.QUANTIDADE), 0) AS Soma_de_Produtos_Pedidos
 FROM Cliente
@@ -58,7 +58,7 @@ LEFT JOIN Pedido ON Cliente.ID = Pedido.ID_CLIENTE
 LEFT JOIN Produto ON Pedido.ID_PRODUTO = Produto.ID
 GROUP BY Cliente.NOME;
 
--- 5 - NOME do CLIENTE, NOME do PRODUTO, QUANTIDADE de PEDIDOS feitos no ano de 2023
+-- 5 - Retornar Nome do Cliente, Nome do Produto, e quantidade de pedidos feitos no ano de 2023.
 
 SELECT Cliente.NOME AS Nome_Cliente, Produto.NOME AS Nome_Produto, Pedido.QUANTIDADE
 FROM Pedido
@@ -66,20 +66,20 @@ INNER JOIN Cliente ON Pedido.ID_CLIENTE = Cliente.ID
 INNER JOIN Produto ON Pedido.ID_PRODUTO = Produto.ID
 WHERE EXTRACT(YEAR FROM Pedido.DATA) = 2023;
 
--- 6 - CODIGO do PRODUTO, NOME do PRODUTO, NUMERO de PEDIDO já feito para esse PRODUTO, filtrando por produtos com no mínimo 3 pedidos
+-- 6 - Retornar Código do Produto, Nome do Produto e Número de Pedidos feitos para esse produto, filtrando apenas produtos que tiveram no mínimo 3 unidades pedidas.
 
 SELECT Produto.CODIGO as Código, Produto.NOME as Nome_Produto, Pedido.QUANTIDADE 
 FROM Produto, Pedido 
 WHERE Produto.ID = Pedido.ID_PRODUTO 
 AND pedido.QUANTIDADE > 2;
 
--- 7 - VALOR TOTAL (PREÇO * QUANTIDADE_ESTOQUE) de PEDIDOS feitos para PRODUTOS que entraram no estoque entre 01/06/2022 e 31/01/2023
+-- 7 - Retornar o valor total(preço x quantidade) de pedidos feitos para produtos que entraram no estoque entre Junho de 2022 e Janeiro de 2023.
 
 SELECT Pedido.NUMERO, Produto.NOME, Produto.PRECO * Pedido.QUANTIDADE AS Valor_total
 FROM Produto, Pedido
 WHERE Produto.DATA_ENTRADA_ESTOQUE > '01/06/2022' AND Produto.DATA_ENTRADA_ESTOQUE < '31/01/2023' AND Produto.ID = Pedido.ID_PRODUTO;
 
--- 8 - NOME do CLIENTE, CPF e NÚMERO de dias desde o ultimo PEDIDO para pessoas com sobrenome LIMA
+-- 8 - Retornar o nome do cliente, CPF e número de dias desde o último pedido dos clientes que possuem o sobrenome Lima.
 
 SELECT Cliente.NOME AS Nome_Cliente, Cliente.CPF AS CPF, CURRENT_DATE - Pedido.DATA as Ultimo_pedido
 FROM Cliente
@@ -87,7 +87,7 @@ INNER JOIN Pedido ON Cliente.ID = Pedido.ID_CLIENTE
 WHERE Cliente.NOME LIKE '%Lima%';
 
 
--- 9 - +200 para QUANTIDADE_ESTOQUE de PRODUTOS que tiveram pedidos entre 01/12/2022 e 28/02/2023
+-- 9 - Atualizar para 200 a quantidade em estoque dos produtos que tiveram pedidos feitos entre 01/12/2022 e 28/02/2023.
 
 UPDATE Produto
 SET QUANTIDADE_ESTOQUE = QUANTIDADE_ESTOQUE + 200 
@@ -97,7 +97,7 @@ WHERE Pedido.DATA > '01/12/2022' AND Pedido.DATA < '28/02/2023' AND Produto.ID =
 -- Checagem
 SELECT NOME, QUANTIDADE_ESTOQUE FROM Produto ORDER BY ID ASC;
 
--- 10 - Excluir pedidos para Produtos que tenham '00' no código
+-- 10 - Excluir os pedidos dos produtos que tenham “00” no código.
 
 DELETE FROM Pedido
 WHERE ( SELECT Produto.CODIGO FROM PRODUTO WHERE Produto.ID = Pedido.ID_PRODUTO) LIKE '%00%';
